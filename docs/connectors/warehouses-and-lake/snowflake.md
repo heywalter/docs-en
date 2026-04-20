@@ -12,7 +12,6 @@ import TabItem from '@theme/TabItem';
 
 | Category | Data Types |
 | ----- | ---------------------------- |
-| Integer | BIGINT |
 | Numeric | NUMBER, FLOAT |
 | String | TEXT |
 | Binary | BINARY, FILE |
