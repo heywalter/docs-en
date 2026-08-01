@@ -42,7 +42,7 @@ When used as a source, StarRocks supports only full synchronization. It does not
 - TapData writes to StarRocks using **Stream Load**. Since supported operations vary by table type (e.g., detail tables support inserts only, but not updates or deletes), see [Table Types Overview](https://docs.mirrorship.cn/docs/table_design/table_types/) for more information.
 
   :::tip
-  Partitioned tables are not created automatically. You must manually define partition keys, buckets, and sort keys before syncing if needed.
+  TapData does not automatically create StarRocks table partitions. If the target table requires partitioning, create the table manually before synchronization. For automatically created target tables, configure the bucket key, bucket count, and sort fields in the target node's advanced settings when needed.
 
   :::
 
