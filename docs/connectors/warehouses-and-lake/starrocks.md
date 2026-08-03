@@ -147,9 +147,8 @@ When used as a source, StarRocks supports only full synchronization. It does not
 
 ## Node advanced features
 
-When StarRocks is used as a target node, you can use the following advanced settings to control automatic table creation and Stream Load writes. These settings do not apply to StarRocks source nodes.
+When StarRocks is used as the target node in a data replication task, TapData buffers records locally by table and writes them to StarRocks in batches through Stream Load when either the flush size or flush timeout is reached. For high-frequency, small-batch writes during real-time replication, this mechanism reduces request overhead. You can use the following advanced node settings to control automatic table creation and write behavior, balancing write throughput, data visibility latency, and local buffer usage.
 
-<!-- TODO: Add a screenshot for StarRocks node advanced features. -->
 
 | Configuration | Description |
 | --- | --- |
