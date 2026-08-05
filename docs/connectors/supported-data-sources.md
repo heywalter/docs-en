@@ -198,6 +198,15 @@ import TabItem from '@theme/TabItem';
     <td>2008, 2008 R2, 2012, 2014, 2016, 2017, 2019, 2022</td>
   </tr>
   <tr>
+    <td>StarRocks</td>
+    <td>✅</td>
+    <td>➖</td>
+    <td>➖</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>3.0 and above</td>
+  </tr>
+  <tr>
     <td>Sybase</td>
     <td>✅</td>
     <td>✅</td>
@@ -421,15 +430,6 @@ The beta version of the data sources is in public preview and has passed the bas
     <td>✅</td>
     <td>N/A</td>
   </tr>  
-  <tr>
-    <td>StarRocks</td>
-    <td>➖</td>
-    <td>➖</td>
-    <td>➖</td>
-    <td>✅</td>
-    <td>➖</td>
-    <td>3.0 and above</td>
-  </tr>
   <tr>
     <td>YashanDB</td>
     <td>➖</td>
