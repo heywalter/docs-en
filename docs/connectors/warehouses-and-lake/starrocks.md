@@ -28,12 +28,13 @@ StarRocks 3.x (no restrictions on deployment architecture)
 
 ## Supported Sync Operations
 
+* **Full synchronization (as a source only)**: Tables and views.
 * **DML (as a target only)**: INSERT, UPDATE, DELETE
 * **DDL apply (as a target only)**: Add columns, change column attributes, and drop columns.
 
 :::tip
 
-When used as a source, StarRocks supports only full synchronization. It does not support incremental CDC or DDL event collection.
+When used as a source, StarRocks supports only full synchronization for both tables and views. It does not support incremental CDC or DDL event collection.
 
 :::
 

@@ -80,7 +80,7 @@ Before deployment, we need to perform the following operations on both servers.
       ./tapdata sid
       ```
 
-      If the current installation package does not support this command, use the following compatible method.
+      You can run this command before starting TapData for the first time. You do not need to complete the `./tapdata start` prompts first. If the current installation package does not support this command, use the following compatible method:
 
       ```bash
       java -cp components/tm.jar -Dloader.main=com.tapdata.tm.license.util.SidGenerator org.springframework.boot.loader.launch.PropertiesLauncher
@@ -194,7 +194,7 @@ Before deployment, we need to perform the following operations on both servers.
       ./tapdata sid
       ```
 
-      If the current installation package does not support this command, use the following compatible method.
+      You can run this command before starting TapData for the first time. You do not need to complete the `./tapdata start` prompts first. If the current installation package does not support this command, use the following compatible method:
 
       ```bash
       java -cp components/tm.jar -Dloader.main=com.tapdata.tm.license.util.SidGenerator org.springframework.boot.loader.launch.PropertiesLauncher
