@@ -67,6 +67,12 @@ This guide uses CentOS 7 as an example to demonstrate the deployment process.
    1. Execute the following command to obtain the SID information required for the application.
 
       ```bash
+      ./tapdata sid
+      ```
+
+      You can run this command before starting TapData for the first time. You do not need to complete the `./tapdata start` prompts first. If the current installation package does not support this command, use the following compatible method:
+
+      ```bash
       java -cp components/tm.jar -Dloader.main=com.tapdata.tm.license.util.SidGenerator org.springframework.boot.loader.launch.PropertiesLauncher
       ```
 

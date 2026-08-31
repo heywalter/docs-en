@@ -14,6 +14,33 @@ import TabItem from '@theme/TabItem';
 <TabItem value="Version 4.x" default>
 ```
 
+## 4.22.0
+
+### New Features
+
+- [StarRocks](connectors/warehouses-and-lake/starrocks.md) sources now support full synchronization of views. When selecting objects to sync, you can select both tables and views.
+
+### Enhancements
+
+- Improved the `./tapdata sid` command for [deployments](platform-ops/production-deploy/install-tapdata-ha.md). You can now retrieve the SID required for a License application before the first startup, without first completing the `./tapdata start` prompts.
+- Improved full sync progress in [task monitoring](data-replication/monitor-task.md). Node summaries and details now report progress more accurately.
+- Improved task milestones and run history. You can view the full sync duration for previous runs, and tasks that skip the full sync stage now show that stage as completed.
+- Improved date field configuration in source-node custom conditions. You can now switch between **Specific Dates** and **Relative Dates**.
+- Improved shared mining collection query performance, reducing slow queries in specific scenarios.
+- Updated third-party dependencies to address known security risks.
+
+### Bug Fixes
+
+- Fixed an issue where API Server might fail to start or report compatibility warnings in specific environments.
+- Fixed issues in API Server JSON Query, Custom Query, and GraphQL where some filters, required-parameter validation, or error messages did not work as expected. Improved support for OR, LIKE, and IN conditions.
+- Fixed issues where task metrics might become negative, incremental time might not appear, or a task might immediately enter an error state after it was stopped, reset, or restarted.
+- Fixed issues where the target table list might fail to load after shared mining was enabled, or a sub-account might encounter an error when accessing a shared mining task for an authorized connection.
+- Fixed issues on the [Data Validation](operational-data-hub/fdm-layer/validate-data-quality.md) page where validation connections might fail to load or tasks might be unavailable in the task dropdown.
+- Fixed an issue where TapData did not display the expected notification when Oracle supplemental logging was disabled or its status changed.
+- Fixed a possible time zone offset in date and time fields when using a custom query with a Db2 for i source.
+- Fixed issues in SQL Server synchronization where date conversion might fail when multithreaded writes and source table structure preservation were enabled, or full synchronization between SQL Server databases might produce an SQL syntax error.
+- Fixed an issue where changes in an Excel source might not sync to the target after a data transformation task ran for an extended period.
+
 ## 4.21.0
 
 ### New Features

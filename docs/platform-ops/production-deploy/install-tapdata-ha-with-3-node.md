@@ -60,27 +60,9 @@ Before deployment, perform the following steps on each of the three servers. Thi
 The following operations need to be **performed separately on each of the three servers** to complete the deployment process.
 :::
 
-1. Obtain the License file.
+1. Download the TapData installation package (contact [Tapdata](mailto:team@tapdata.io) for access) and upload it to each server.
 
-   1. Run the following command to get the SID information required for the license application.
-
-      ```bash
-      ./tapdata sid
-      ```
-
-      If the current installation package does not support this command, use the following compatible method.
-
-      ```bash
-      java -cp components/tm.jar -Dloader.main=com.tapdata.tm.license.util.SidGenerator org.springframework.boot.loader.launch.PropertiesLauncher
-      ```
-
-   2. Provide the printed SID information to the TapData support team to complete the license application process.
-
-   3. Upload the acquired License file to the extracted directory (named **tapdata**).
-
-2. Download the TapData installation package (contact [Tapdata](mailto:team@tapdata.io) for access) and upload it to the target deployment device.
-
-3. On all target devices, run the following commands to create the installation and working directories, and extract the TapData installation package into the directory.
+2. On all three servers, run the following commands to create the installation and working directories, and extract the TapData installation package.
 
    ```bash
    # Create installation and working directories
@@ -91,6 +73,24 @@ The following operations need to be **performed separately on each of the three 
    :::tip
    If you need to copy the extracted program files to another directory for deployment, use the `cp -a` command to copy the entire directory. Avoid using the `*` wildcard to match files, as this may omit hidden files and cause startup failures.
    :::
+
+3. Obtain the License file.
+
+   1. Go to the extracted directory and run the following command to get the SID information required for the License application.
+
+      ```bash
+      ./tapdata sid
+      ```
+
+      You can run this command before starting TapData for the first time. You do not need to complete the `./tapdata start` prompts first. If the current installation package does not support this command, use the following compatible method:
+
+      ```bash
+      java -cp components/tm.jar -Dloader.main=com.tapdata.tm.license.util.SidGenerator org.springframework.boot.loader.launch.PropertiesLauncher
+      ```
+
+   2. Provide the printed SID information to the TapData support team to complete the License application process.
+
+   3. Upload the acquired License file to the extracted directory (named **tapdata**).
 
 4. Navigate to the extracted directory and run the `./tapdata start` command to start the TapData deployment process. Follow the command line prompts to set up TapData's login address, API service port, MongoDB connection authentication, and other settings. An example setup is provided below:
 
