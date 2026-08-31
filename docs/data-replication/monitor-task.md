@@ -66,7 +66,7 @@ Displaying basic information and key monitoring indicators of the task, includin
 
 Hover your mouse pointer over a node to display key metrics for that node, and click the ![](../images/node_more_icon.png) icon in the bottom right corner of the node to see more details.
 
-- **Full Sync Progress**: The progress report on the full data synchronization.
+- **Full Sync Progress**: Shows the percentage of tables that have completed full synchronization. Open the node details to view the number of completed tables and the total number of tables.
 - **Incremental Data Synchronization**: The incremental log collection time point is represented as the relative time of (engine time - incremental time point of the node) in the floating window when hovering the mouse.
 - **Writing time**: The time it takes for data to be written to the target.
 - **RPS**: RPS (Records Per Second) measures the speed and performance of data transfer by indicating the number of records processed each second.
@@ -80,7 +80,9 @@ Hover your mouse pointer over a node to display key metrics for that node, and c
 
 ![Error code](../images/error_log_code.png)
 
-Click the ![](../images/view_log_icon.png) icon at the top of the page, then you can view the progress, logs, alert list, and associated task information for a task run. You can filter the logs using keywords, periods, and levels, or download them for local analysis on the **Log** tab.
+Click the ![](../images/view_log_icon.png) icon at the top of the page to view progress, logs, run history, alerts, and associated task information. On the **Log** tab, you can filter logs by keyword, time range, and level, or download them for local analysis.
+
+Select a previous run in the run history to view its task milestones and logs. After the full sync stage finishes, the milestone shows its start time, end time, and duration. If the task skips the full sync stage, the milestone shows that stage as completed.
 
 
 
