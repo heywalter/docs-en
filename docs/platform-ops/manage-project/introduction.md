@@ -34,9 +34,10 @@ Before importing resources, the pipeline previews the differences. After approva
 
 - **Project-based packaging**: Group tasks, APIs, and connections into one managed project. TapData includes dependencies automatically so the exported package stays complete.
 - **Configuration as code**: Store exported configuration in GitHub. Each change has a Git history, supports review, and can be compared or rolled back.
-- **Automated releases**: Use GitHub Actions for cross-environment deployment, with conditional triggers, difference previews, and manual approval gates.
+- **Automated releases**: Use GitHub Actions for cross-environment deployment, with conditional triggers, structured change previews, including DAG topology changes and orphan index warnings, and manual approval gates.
+- **High-risk operation isolation and index auditing**: Deploy and review Serving Indexes as a separate stage to reduce the potential performance and service impact of creating indexes on collections that contain data. Review orphan indexes after a rollback.
 - **Environment-specific credentials**: Reuse the same project configuration across environments while injecting the real connection values during deployment.
-- **Credential isolation**: Exported configuration has sensitive fields masked. Passwords and other secrets are not committed to the repository and are managed through GitHub Secrets and Variables.
+- **Credential isolation**: Git export masks sensitive fields, so passwords and other secrets are not committed to the repository. GitHub Secrets and Variables manage the real values during deployment. File export retains the complete configuration and must be handled securely.
 - **Version rollback**: Roll back an environment to a known stable Git tag when a release does not behave as expected.
 
 ## Use cases

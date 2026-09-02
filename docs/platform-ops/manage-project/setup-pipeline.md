@@ -77,10 +77,10 @@ Check the rollback workflow as well. In `tapdata-rollback.yml`, keep only the en
 
 ### Permissions and security
 
-TapData masks sensitive fields in exported project configuration. Repositories store only business configuration. Real connection values, such as database URLs, usernames, and passwords, are stored in the corresponding GitHub Environment Secrets and Variables and are injected during deployment.
+TapData masks sensitive fields in Git-exported project configuration, so repositories store only business configuration. Real connection values, such as database URLs, usernames, and passwords, are stored in the corresponding GitHub Environment Secrets and Variables and are injected during deployment. File export retains the complete configuration and must be handled securely.
 
 - Protect the `main` branch in each tenant repository. Disallow direct pushes, require Pull Requests, and require code review and workflow checks before merge.
-- Use an independent operations approver for the `deploy` approval gate. Developers should not approve their own deployment changes.
+- Use an independent operations approver for the `deploy` approval gate. Developers should not approve their own deployment changes. Before approval, review the structured change preview in the GitHub Actions Step Summary, including connection changes, task DAG changes, API changes, the separate Serving Index preview, and orphan index warnings.
 - Store shared values, such as `GH_DEPLOY_TOKEN`, TapData URLs, and TapData access codes, as organization-level Secrets or Variables.
 - Store environment-specific connection values as Environment Secrets or Variables.
 
@@ -105,6 +105,10 @@ If Secrets and Variables are configured at the organization level, make sure the
 ### Connection credential naming rules
 
 Secrets and Variables for TapData connections use the exported TapData connection name as the lookup key after converting letters to uppercase. GitHub Secret and Variable names support only letters, numbers, and underscores, and must start with a letter or underscore. We recommend using the same rule for TapData connection names. For example, the connection name `oracle_source` maps to the prefix `ORACLE_SOURCE`. Do not use spaces, hyphens (`-`), or Chinese characters in connection names, or deployment might not find the corresponding credentials.
+
+:::tip Environment isolation
+GitHub Environments provide isolation between environments. Configure connection credentials with the same name in each business Environment, such as `dev`, `sit`, and `prod`. Do not add an environment prefix to connection credential names, such as `DEV_ORACLE_SOURCE_DSN` or `SIT_FDM_URI`, because the pipeline cannot resolve them.
+:::
 
 ## Initialize the pipeline
 
@@ -137,7 +141,7 @@ Use a two-repository model to separate deployment logic from business configurat
 
 3. In the tenant repository, add two lightweight workflow route files copied from `tenant-template/.github/workflows/` in the Worker repository:
 
-   - **`tapdata-deploy.yml`**: Listens for exported configuration changes, such as changes under `*_tapdata_export/**` on the `main` branch, pushed tags, and manual dispatch events. By default, it uses the tenant repository name as the TapData project name.
+   - **`tapdata-deploy.yml`**: Listens for exported configuration changes, such as changes under `*_tapdata_export/**` on the `main` branch, pushed tags, and manual dispatch events. By default, it uses the tenant repository name as the TapData project name. When a merged Pull Request triggers deployment, the run name begins with the Pull Request title for a squash merge or the merge commit title for a merge commit, for example `feat(api): xxx (#12) · dw-pipeline → dev`, so you can identify the related business change.
    - **`tapdata-rollback.yml`**: Accepts manual rollback requests by target environment and rollback tag.
 
    :::tip
@@ -198,10 +202,9 @@ Configure repository access credentials, TapData access credentials, and service
 5. If production release itself requires environment-level approval, configure **Required reviewers** separately in the `prod` Environment.
 6. Configure real connection values under each active environment, such as development, testing, and production. Do not add the environment prefix to connection credential names under an Environment. Use one of the following formats:
 
-   - **URI format**: Use this for databases such as MongoDB where the connection string includes the username and password. Store it as a Secret named `{PREFIX}_URI`, such as `FDM_URI`.
-   - **Host and port format**: Use this for PostgreSQL, Oracle, MySQL, and similar databases. Store the address and username as Variables, and store the password as a Secret. Use names such as `{PREFIX}_URL`, `{PREFIX}_USER`, and `{PREFIX}_PASSWORD`. For a TapData connection named `oracle_source`, configure `ORACLE_SOURCE_URL`, `ORACLE_SOURCE_USER`, and `ORACLE_SOURCE_PASSWORD`.
-
-   If multiple connections can share the same fallback values, configure `DEFAULT_URL`, `DEFAULT_USER`, and `DEFAULT_PASSWORD`.
+   - **DSN format (for environments with different database names)**: Configure a `{PREFIX}_DSN` Variable and a `{PREFIX}_PASSWORD` Secret. This is the only format that supports a different database name in each environment, such as `order_dev` and `order_sit`, and the pipeline uses it before the other formats. Leave the password position empty in the DSN, for example `user:@host:port/db`; for MongoDB, retain `username:@`. Store the real password only in the Secret. Never place a plaintext password in a Variable. The DSN stores the address, database name, and username in a plain-text Variable that repository collaborators can view and that might appear in Actions logs. If you do not need a different database name by environment, continue to use an existing format.
+   - **Host and port format**: Configure `{PREFIX}_URL` and `{PREFIX}_USER` as Variables, and `{PREFIX}_PASSWORD` as a Secret. Use this format for relational databases with the same database name in each environment. It supports `DEFAULT_*` fallback values.
+   - **Full URI format**: Configure a `{PREFIX}_URI` Secret, for example `mongodb://user:pass@host:port/db`. Use this format for existing MongoDB connections or when you need to keep the entire connection string encrypted.
 
 ### Step 4: Install a self-hosted runner
 

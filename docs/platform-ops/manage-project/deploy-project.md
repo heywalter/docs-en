@@ -27,8 +27,9 @@ Package the team's tasks and API as one project. The project becomes the unit th
 
    ![Create a project and select resources](../../images/create_project.png)
 
-   :::tip
-   When you select tasks or APIs, TapData automatically includes dependent connections. In this example, `oracle_source` and `doris_target` are included automatically.
+   :::tip Dependent connections and Serving Indexes
+   - **Dependent connections**: When you select tasks or APIs, TapData automatically includes dependent connections. In this example, `oracle_source` and `doris_target` are included automatically.
+   - **Managing Serving Indexes**: If your project includes data service APIs and you want the target environment to create the related MongoDB Serving Indexes, open the API's **Serving Indexes** page in the source environment. Load the indexes and select the indexes that TapData should manage. Only selected index declarations are exported with the project and applied during automated deployment. The target database account must have permission to create indexes. If it does not, a DBA must create them manually based on the deployment report.
    :::
 
 4. Click **Save**.
@@ -69,8 +70,9 @@ Export the project configuration from the development environment and submit it 
 
 3. In the resource list, review the tasks and APIs to be exported. If the list is correct, click **Confirm Export**.
 
-   :::tip
-   Connection credentials are masked during export. Database passwords and other sensitive fields are not written to the configuration files. Enable **Rerun** only when the target environment needs the task to run a full synchronization again, for example after adding source tables or changing primary keys. For routine changes, keep the default setting so tasks continue from the last checkpoint.
+   :::tip Credential masking and rerun behavior
+   - **Credential masking**: Git export always masks sensitive credentials, including database passwords and connection strings, before writing files to the repository. During later deployments, GitHub Environment values inject the credentials. File export retains the complete configuration for offline manual migration.
+   - **Rerun**: Enable **Rerun** only when the target environment needs the task to run a full synchronization again, for example after adding source tables or changing primary keys. For routine changes, keep the default setting so tasks continue from the last checkpoint.
    :::
 
 <details>
@@ -83,7 +85,7 @@ Exported configuration is organized as a directory. Git export commits this dire
 {project-name}_tapdata_export/
 ├── GroupInfo.json          # Project metadata: project name, Git repository, and resource list
 ├── Connection/             # Connection configuration, including dependencies of tasks and APIs
-│   ├── {id}_Connection_Config.json    # Connection parameters with sensitive fields masked
+│   ├── {id}_Connection_Config.json    # Masked for Git export; file export might contain sensitive information
 │   └── {id}_Connection_Metadata.json  # Table metadata for the connection
 ├── Task/                   # Task configuration
 │   ├── {id}_MigrateTask.json          # Data replication task
@@ -101,7 +103,7 @@ Exported configuration is organized as a directory. Git export commits this dire
 Notes:
 
 - **Connections**: TapData detects and exports connections based on task and API dependencies. You do not need to select them manually.
-- **Sensitive information**: Usernames, passwords, and other credential fields are cleared during export. In automated deployment, TapData injects real values from GitHub Secrets and Variables. In manual import, update the connection values after import.
+- **Sensitive information**: Git export clears usernames, passwords, and other credential fields. During automated deployment, TapData injects real values from GitHub Secrets and Variables. File export retains the complete configuration, so the exported archive might contain sensitive information. Store it securely. For manual import, update connection values as needed for the target environment.
 - **User data**: The `User` directory contains operator account and role information so the target environment can restore the user context. Passwords are stored as hashes and do not include plaintext values.
 
 </details>
@@ -113,6 +115,20 @@ If the `dev` environment is configured, merge the Pull Request in GitHub to depl
 1. In the GitHub tenant repository, open the Pull Request created by TapData. Review the exported configuration, then click **Merge**.
 2. The merge triggers the GitHub Actions `TapData Deploy` workflow and deploys the configuration to the development validation environment.
 3. If the preview shows changes to connections, tasks, or APIs, approve the `deploy` gate on the **Actions** page.
+
+   <details>
+   <summary>Review the deployment preview report</summary>
+
+   The workflow writes a structured add, update, and delete preview to the run **Summary** page. Review the following areas before approving the deployment:
+
+   - **Connections**: Verify that connection settings match the target environment.
+   - **Tasks**: Review additions, removals, and configuration changes for DAG nodes and edges, including `From` and `To` values.
+   - **APIs**: Review API paths and exposed fields. When only Serving Index declarations change, the report marks the API as `(serving-index declarations only)` to show that the API contract is unchanged.
+   - **Serving Indexes**: Review the planned MongoDB Serving Indexes, including names, fields, and sort directions. If the target database account cannot create indexes, a DBA can run the `createIndex` commands in the report. Use the import result after deployment as the source of truth. If a related synchronization task uses `dropTable`, rerunning the task also removes newly created Serving Indexes.
+   - **Orphan indexes**: Review indexes that exist in a target collection but are not declared by any API. They can increase write overhead and count toward MongoDB's limit of 64 indexes per collection. A DBA must verify and remove them manually when appropriate.
+
+   </details>
+
 4. After deployment finishes, sign in to the development validation TapData environment. Verify that `CRM_TO_DW`, `ORDER_TO_DW`, and `customer-api` were imported correctly and that the connections pass the connection test.
 
 ## Step 5: Create a tag to deploy to testing or acceptance
@@ -150,6 +166,11 @@ If a deployment does not behave as expected, such as when a task enters an abnor
 
 Rollback affects only the selected target environment. Other environments are not changed.
 
+:::caution Serving Indexes and database names during rollback
+- **Indexes are add-only**: Rollback restores task and API configuration, but it never deletes indexes that were created in the target database. This prevents accidental removal of indexes that can affect production performance. After rollback, unused indexes appear as orphan indexes in the next deployment preview. Have a DBA review and remove them manually when appropriate.
+- **DSN database names use the current Variable value**: When you use DSN-based connection credentials, rollback restores project configuration and deployment logic, but the database name remains controlled by the current `_DSN` value in the GitHub Environment. Rolling back a Git tag does not change it automatically.
+:::
+
 ## FAQ
 
 **Q: How does project import handle existing resources?**
@@ -183,6 +204,17 @@ The target environment might be missing a tag, Agent, or another runtime resourc
 
 - Check whether `{ENV}_TAPDATA_ACCESS_CODE` is configured correctly and is still valid.
 - Open the GitHub Actions logs, find the error returned by the TapData API, and troubleshoot based on that response.
+
+**Q: Why is an API marked as updated with `(serving-index declarations only)`?**
+
+Serving Index declarations are stored in the API configuration. Selecting or clearing an index declaration updates the API metadata even when the API path, request and response fields, and API contract do not change. The pipeline uses this label to distinguish an index-only update from an API contract change.
+
+**Q: How should I handle orphan indexes in the deployment preview?**
+
+An orphan index exists in the target collection but is not declared by any API. Orphan indexes can result from previous versions or rollbacks.
+
+- **Impact**: Unused indexes increase write overhead and count toward MongoDB's limit of 64 indexes per collection.
+- **What to do**: TapData does not delete existing indexes during deployment or rollback. Have an operations team member or DBA review the orphan index list and remove an index from the database only after confirming that no other workload uses it, for example with `db.collection.dropIndex(...)`.
 
 ## Appendix: Manually import configuration
 
