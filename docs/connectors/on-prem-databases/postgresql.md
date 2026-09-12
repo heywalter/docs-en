@@ -544,7 +544,7 @@ Use Walminer for an existing Walminer plugin or Pgto Server deployment. For a ne
 	* **username**: Username.
 	
 
-### Enable SSL Connection (Optional)
+### Enable SSL Connection (Optional) {#enable-ssl-connection}
 
 To further enhance the security of the data pipeline, you can enable SSL (Secure Sockets Layer) encryption for PostgreSQL, providing encrypted network connections at the transport layer. This improves communication data security while ensuring data integrity.
 
@@ -661,7 +661,7 @@ To further enhance the security of the data pipeline, you can enable SSL (Secure
       * **Enable Heartbeat Table**: When the connection type is set to **Source and Target** or **Source**, you can enable this option. Once the task references and starts using this data source, TapData will create a heartbeat table named **_tapdata_heartbeat_table** in the source database and update its data every 10 seconds (the database account must have relevant permissions), to monitor the health of the data source connection and task.
       * **Allow Replication Session Settings**: Enabled by default. If you disable it without setting the replication role separately, writes to tables with foreign keys might be affected.
       * **Preset Total WAL Size (MB)**: The default is `102400`. This threshold applies only when data source monitoring is enabled and is used by WAL usage alerts and cleanup policies. Actual cleanup also depends on idle slots and the monitoring policy.
-   * **SSL Settings**: Choose whether to [enable SSL](#enable-ssl-connection-optional) to connect to the data source, which can further enhance data security. After enabling this function, you need to upload CA files, client certificates, and fill in the client password.
+   * **SSL Settings**: Choose whether to [enable SSL](#enable-ssl-connection) to connect to the data source, which can further enhance data security. After enabling this function, you need to upload CA files, client certificates, and fill in the client password.
 
 5. Click **Test**, and after passing the test, click **Save**.
 
@@ -677,13 +677,6 @@ When configuring a data replication or transformation task, you can set the foll
 
 ![PostgreSQL Node Advanced Features](../../images/postgresql_node_advanced_settings.png)
 
-<!-- TODO: Update the source node advanced settings screenshot and confirm which new fields appear in customer connector versions. -->
-
-:::note
-
-The available source settings depend on the installed connector version. Some settings appear dynamically based on the node type and other configuration. If a setting does not appear in the UI, do not add it manually to the task configuration as a supported option.
-
-:::
 
 * As a Source Node
   * **Hash Sharding**: When enabled, all table data will be split into multiple shards based on hash values during the full synchronization phase, allowing concurrent data reading. This significantly improves reading performance but also increases the database load. The maximum number of shards can be manually set after enabling this option.
