@@ -4,9 +4,6 @@ pdkId: paimon-plus
 
 # Paimon Plus
 
-import Content1 from '../../reuse-content/_enterprise-and-community-features.md';
-
-<Content1 />
 
 Paimon Plus is TapData's connector for [Apache Paimon](https://paimon.apache.org/), a data lake format for building real-time lakehouses with Flink and Spark. You can use Paimon Plus as a source or target for batch and real-time data synchronization.
 
