@@ -186,7 +186,7 @@ import TabItem from '@theme/TabItem';
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>9.4～16</td>
+    <td>9.4～17</td>
   </tr>
   <tr>
     <td>SQL Server</td>
@@ -404,13 +404,13 @@ The beta version of the data sources is in public preview and has passed the bas
     <td>0.11.0</td>
   </tr>
   <tr>
-    <td>Paimon</td>
-    <td>➖</td>
-    <td>➖</td>
+    <td>Paimon Plus</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>➖</td>
     <td>✅</td>
     <td>➖</td>
-    <td>0.6 and above</td>
+    <td>0.8.2 and later</td>
   </tr>
   <tr>
     <td>SelectDB</td>
